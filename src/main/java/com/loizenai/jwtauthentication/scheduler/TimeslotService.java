@@ -3,6 +3,8 @@ package com.loizenai.jwtauthentication.scheduler;
 import com.loizenai.jwtauthentication.model.TimeSlot;
 import com.loizenai.jwtauthentication.repository.TimesloteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -14,10 +16,18 @@ public class TimeslotService {
     @Autowired
     TimesloteRepository timesloteRepository;
 
-    public List<TimeSlot> timeSlots(){
-        return new ArrayList<TimeSlot>(
-                timesloteRepository.findAll()
-        );
+    public ResponseEntity<?> timeSlots(TimeSlot slot){
+
+        List<TimeSlot> slots = new ArrayList<TimeSlot>();
+
+        try{
+            timesloteRepository.findAll().forEach(slots::add);
+
+        }catch (Exception e){
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        return new ResponseEntity<>(slots, HttpStatus.OK);
     }
 
     public Optional<TimeSlot> timeSlot(long id) {
@@ -32,8 +42,8 @@ public class TimeslotService {
                 timeslot.getStartTime(),
                 timeslot.getEndTime()
         );
-        System.out.println(slot.getId());
         timesloteRepository.save(slot);
     }
+
 
 }

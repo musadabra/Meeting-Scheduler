@@ -5,6 +5,7 @@ import com.loizenai.jwtauthentication.model.TimeSlot;
 import com.loizenai.jwtauthentication.scheduler.InvitationService;
 import com.loizenai.jwtauthentication.scheduler.TimeslotService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -47,10 +48,10 @@ public class TestRestAPIs {
 	}
 
 	//GET ALL SCHEDULES
-	@GetMapping("/api/schedule/")
+	@GetMapping("/api/schedule")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> schedules() {
-		return ResponseEntity.ok().body(new TimeslotService().timeSlots());
+	public ResponseEntity<?> schedules(@RequestBody  TimeSlot slot) {
+		return ResponseEntity.ok().body(new TimeslotService().timeSlots(slot));
 	}
 
 	@GetMapping("/api/schedule/{id}")
@@ -63,7 +64,7 @@ public class TestRestAPIs {
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> createSlot(@RequestBody TimeSlot timeslot){
 		timeslotService.createTimeSlot(timeslot);
-		return ResponseEntity.ok().body(timeslot);
+		return new ResponseEntity<>(timeslot, HttpStatus.CREATED);
 	}
 
 
