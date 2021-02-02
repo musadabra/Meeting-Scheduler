@@ -7,10 +7,11 @@ import java.util.Optional;
 
 public interface TimesloteRepository extends JpaRepository<TimeSlot, String> {
 
-    Optional<TimeSlot> findByid(long id);
-    Optional<TimeSlot> findByDate(String id);
+    Optional<TimeSlot> findById(long id);
+    Optional<TimeSlot> findByDate(String date);
 
-    boolean existsById(String id);
+    boolean existsById(long id);
     boolean existsByUserId(String id);
 
+    void deleteById(long id);
 }

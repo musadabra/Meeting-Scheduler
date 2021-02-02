@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -50,14 +51,14 @@ public class TestRestAPIs {
 	//GET ALL SCHEDULES
 	@GetMapping("/api/schedule")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> schedules(@RequestBody  TimeSlot slot) {
-		return ResponseEntity.ok().body(new TimeslotService().timeSlots(slot));
+	public ResponseEntity<?> schedules() {
+		return ResponseEntity.ok().body(timeslotService.timeSlots());
 	}
 
 	@GetMapping("/api/schedule/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> schedules(@PathVariable long id) {
-		return ResponseEntity.ok().body(new TimeslotService().timeSlot(id));
+		return ResponseEntity.ok().body(timeslotService.timeSlot(id));
 	}
 
 	@PostMapping("/api/schedule")
@@ -67,5 +68,20 @@ public class TestRestAPIs {
 		return new ResponseEntity<>(timeslot, HttpStatus.CREATED);
 	}
 
+	@Transactional
+	@PutMapping("/api/schedule/{id}")
+	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+	public ResponseEntity<?> updateSlot(@RequestBody TimeSlot timeslot, @PathVariable long id) {
+		timeslotService.updateSlot(timeslot, id);
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Transactional
+	@DeleteMapping("/api/schedule/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> deleteSlot(@PathVariable long id) {
+		timeslotService.deleteTimeSlot(id);
+		return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 
 }

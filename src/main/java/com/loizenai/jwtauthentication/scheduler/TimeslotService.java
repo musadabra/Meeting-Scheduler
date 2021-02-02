@@ -16,7 +16,7 @@ public class TimeslotService {
     @Autowired
     TimesloteRepository timesloteRepository;
 
-    public ResponseEntity<?> timeSlots(TimeSlot slot){
+    public ResponseEntity<?> timeSlots(){
 
         List<TimeSlot> slots = new ArrayList<TimeSlot>();
 
@@ -30,8 +30,9 @@ public class TimeslotService {
         return new ResponseEntity<>(slots, HttpStatus.OK);
     }
 
-    public Optional<TimeSlot> timeSlot(long id) {
-        return timesloteRepository.findByid(id);
+    //GET TIME SLOT{ID}
+    public ResponseEntity<?> timeSlot(long id) {
+            return new ResponseEntity<>(timesloteRepository.findById(id), HttpStatus.OK);
     }
 
     //CREATE
@@ -43,6 +44,29 @@ public class TimeslotService {
                 timeslot.getEndTime()
         );
         timesloteRepository.save(slot);
+    }
+
+    //UPDATE TIME SLOT
+    public ResponseEntity<?> updateSlot(TimeSlot slot, long id){
+       Optional<TimeSlot> timeslot = timesloteRepository.findById(id);
+
+       if(timeslot.isPresent()){
+           TimeSlot aslot = timeslot.get();
+           aslot.setUserId(slot.getUserId());
+           aslot.setDate(slot.getDate());
+           aslot.setStartTime(slot.getStartTime());
+           aslot.setEndTime(slot.getEndTime());
+
+           return new ResponseEntity<>(timesloteRepository.save(aslot), HttpStatus.OK);
+       }else{
+           return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+       }
+
+    }
+
+    //DELETE
+    public void deleteTimeSlot(long id){
+        timesloteRepository.deleteById(id);
     }
 
 
