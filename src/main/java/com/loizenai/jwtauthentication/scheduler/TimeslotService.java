@@ -20,14 +20,20 @@ public class TimeslotService {
         );
     }
 
-    public Optional<TimeSlot> timeSlot(String id) {
+    public Optional<TimeSlot> timeSlot(long id) {
         return timesloteRepository.findByid(id);
     }
 
     //CREATE
     public void createTimeSlot(TimeSlot timeslot){
-        timesloteRepository.save(timeslot);
+        TimeSlot slot = new TimeSlot(
+                timeslot.getUserId(),
+                timeslot.getDate(),
+                timeslot.getStartTime(),
+                timeslot.getEndTime()
+        );
+        System.out.println(slot.getId());
+        timesloteRepository.save(slot);
     }
-    //UPDATE
-    //DELETE
+
 }

@@ -7,23 +7,31 @@ import javax.persistence.*;
 public class TimeSlot {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private String id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
+
+    @Column(name = "user_id")
     private String userId;
+
+    @Column(name = "date")
     private String date;
+
+    @Column(name = "start_time")
     private String startTime;
+
+    @Column(name = "end_time")
     private String endTime;
 
     public TimeSlot(){}
 
-    public TimeSlot(String id, String userId, String date, String startTime, String endTime) {
+    public TimeSlot(String userId, String date, String startTime, String endTime) {
         this.userId = userId;
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
@@ -63,4 +71,14 @@ public class TimeSlot {
         this.endTime = endTime;
     }
 
+    @Override
+    public String toString() {
+        return "TimeSlot{" +
+                "id='" + id + '\'' +
+                ", userId='" + userId + '\'' +
+                ", date='" + date + '\'' +
+                ", startTime='" + startTime + '\'' +
+                ", endTime='" + endTime + '\'' +
+                '}';
+    }
 }

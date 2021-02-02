@@ -55,7 +55,7 @@ public class TestRestAPIs {
 
 	@GetMapping("/api/schedule/{id}")
 	@PreAuthorize("hasRole('ADMIN')")
-	public ResponseEntity<?> schedules(@PathVariable String id) {
+	public ResponseEntity<?> schedules(@PathVariable long id) {
 		return ResponseEntity.ok().body(new TimeslotService().timeSlot(id));
 	}
 
