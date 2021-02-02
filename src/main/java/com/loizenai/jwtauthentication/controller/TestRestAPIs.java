@@ -1,14 +1,13 @@
 package com.loizenai.jwtauthentication.controller;
 
 import com.loizenai.jwtauthentication.message.request.SignUpForm;
+import com.loizenai.jwtauthentication.model.TimeSlot;
 import com.loizenai.jwtauthentication.scheduler.InvitationService;
+import com.loizenai.jwtauthentication.scheduler.TimeslotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 
@@ -17,8 +16,10 @@ public class TestRestAPIs {
 
 	@Autowired
 	private InvitationService invitationService;
+	@Autowired
+	private TimeslotService timeslotService;
 	
-	@GetMapping("/api/test/user")
+	@GetMapping("/api/user")
 	@PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
 	public String userAccess() {
 		return ">>> User Contents!";
@@ -30,7 +31,7 @@ public class TestRestAPIs {
 		return ">>> Board Management Project";
 	}
 
-	@GetMapping("/api/test/admin")
+	@GetMapping("/api/admin")
 	@PreAuthorize("hasRole('ADMIN')")
 	public String adminAccess() {
 		return ">>> Admin Contents";
@@ -49,7 +50,21 @@ public class TestRestAPIs {
 	@GetMapping("/api/schedule/")
 	@PreAuthorize("hasRole('ADMIN')")
 	public ResponseEntity<?> schedules() {
-		return ResponseEntity.ok().body("schedules");
+		return ResponseEntity.ok().body(new TimeslotService().timeSlots());
 	}
+
+	@GetMapping("/api/schedule/{id}")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> schedules(@PathVariable String id) {
+		return ResponseEntity.ok().body(new TimeslotService().timeSlot(id));
+	}
+
+	@PostMapping("/api/schedule")
+	@PreAuthorize("hasRole('ADMIN')")
+	public ResponseEntity<?> createSlot(@RequestBody TimeSlot timeslot){
+		timeslotService.createTimeSlot(timeslot);
+		return ResponseEntity.ok().body(timeslot);
+	}
+
 
 }
