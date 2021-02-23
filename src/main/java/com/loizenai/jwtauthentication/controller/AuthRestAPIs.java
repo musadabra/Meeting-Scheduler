@@ -11,17 +11,23 @@ import com.loizenai.jwtauthentication.repository.RoleRepository;
 import com.loizenai.jwtauthentication.repository.UserRepository;
 import com.loizenai.jwtauthentication.security.jwt.JwtProvider;
 import com.loizenai.jwtauthentication.service.UserService;
+import com.loizenai.jwtauthentication.service.mail.ResetPassword;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.mail.MailSender;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -48,6 +54,12 @@ public class AuthRestAPIs {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    ResetPassword resetPassword;
+
+    private JavaMailSender javaMailSender;
+    private MailSender mailSender;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
@@ -111,7 +123,8 @@ public class AuthRestAPIs {
     }
 
     @PutMapping("/resetpassword")
-    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetForm passwordresetform ){
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetForm passwordresetform, HttpServletRequest request ){
+
         User user = userService.findUserByEmail(passwordresetform.getEmail());
         if (user == null) {
             //RESPONED WITH USER NOT FOUND;
@@ -122,7 +135,27 @@ public class AuthRestAPIs {
 
         String token = UUID.randomUUID().toString();
         userService.createPasswordResetTokenForUser(user, token);
-        mailSender.send(constructResetTokenEmail(getAppUrl(request),
-                request.getLocale(), token, user));
+        System.out.print(request.getLocale());
+        try {
+            mailSender.send(resetPassword.constructResetTokenEmail(getAppUrl(request), request.getLocale(), token, user));
+        }catch(Exception e){
+            return new ResponseEntity<String>(
+                    "Fail -> Email failed to send",
+                    HttpStatus.BAD_REQUEST);
+        }
+        return ResponseEntity.ok().body("Reset password email sent!");
+
+    }
+
+//    RETURN THE URL OF THE APP
+    public String getAppUrl(HttpServletRequest request){
+        URL requestURL = null;
+        try {
+            requestURL = new URL(request.getRequestURL().toString());
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        String port = requestURL.getPort() == -1 ? "" : ":" + requestURL.getPort();
+        return requestURL.getProtocol() + "://" + requestURL.getHost() + port;
     }
 }

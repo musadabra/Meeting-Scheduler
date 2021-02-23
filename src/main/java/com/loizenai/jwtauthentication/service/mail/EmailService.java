@@ -1,4 +1,4 @@
-package com.loizenai.jwtauthentication.scheduler.mail;
+package com.loizenai.jwtauthentication.service.mail;
 
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -25,4 +25,5 @@ public class EmailService {
 
         javaMailSender.send(mailMessage);
     }
+
 }

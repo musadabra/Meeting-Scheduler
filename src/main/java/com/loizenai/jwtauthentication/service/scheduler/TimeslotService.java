@@ -1,4 +1,4 @@
-package com.loizenai.jwtauthentication.scheduler;
+package com.loizenai.jwtauthentication.service.scheduler;
 
 import com.loizenai.jwtauthentication.model.TimeSlot;
 import com.loizenai.jwtauthentication.repository.TimesloteRepository;

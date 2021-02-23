@@ -2,8 +2,8 @@ package com.loizenai.jwtauthentication.controller;
 
 import com.loizenai.jwtauthentication.message.request.SignUpForm;
 import com.loizenai.jwtauthentication.model.TimeSlot;
-import com.loizenai.jwtauthentication.scheduler.InvitationService;
-import com.loizenai.jwtauthentication.scheduler.TimeslotService;
+import com.loizenai.jwtauthentication.service.scheduler.InvitationService;
+import com.loizenai.jwtauthentication.service.scheduler.TimeslotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

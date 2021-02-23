@@ -1,4 +1,4 @@
-package com.loizenai.jwtauthentication.scheduler;
+package com.loizenai.jwtauthentication.service.scheduler;
 
 import com.loizenai.jwtauthentication.message.request.SignUpForm;
 import com.loizenai.jwtauthentication.model.Role;
@@ -6,7 +6,7 @@ import com.loizenai.jwtauthentication.model.RoleName;
 import com.loizenai.jwtauthentication.model.User;
 import com.loizenai.jwtauthentication.repository.RoleRepository;
 import com.loizenai.jwtauthentication.repository.UserRepository;
-import com.loizenai.jwtauthentication.scheduler.mail.EmailService;
+import com.loizenai.jwtauthentication.service.mail.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
