@@ -1,6 +1,7 @@
 package com.loizenai.jwtauthentication.controller;
 
 import com.loizenai.jwtauthentication.message.request.LoginForm;
+import com.loizenai.jwtauthentication.message.request.PasswordResetForm;
 import com.loizenai.jwtauthentication.message.request.SignUpForm;
 import com.loizenai.jwtauthentication.message.response.JwtResponse;
 import com.loizenai.jwtauthentication.model.Role;
@@ -9,6 +10,7 @@ import com.loizenai.jwtauthentication.model.User;
 import com.loizenai.jwtauthentication.repository.RoleRepository;
 import com.loizenai.jwtauthentication.repository.UserRepository;
 import com.loizenai.jwtauthentication.security.jwt.JwtProvider;
+import com.loizenai.jwtauthentication.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 @CrossOrigin(origins = "*", maxAge = 3600)
 @RestController
@@ -43,8 +46,12 @@ public class AuthRestAPIs {
     @Autowired
     JwtProvider jwtProvider;
 
+    @Autowired
+    UserService userService;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginRequest) {
+
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         loginRequest.getUsername(),
@@ -54,7 +61,6 @@ public class AuthRestAPIs {
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String jwt = jwtProvider.generateJwtToken(authentication);
-
         return ResponseEntity.ok(new JwtResponse(jwt));
     }
 
@@ -102,5 +108,21 @@ public class AuthRestAPIs {
         userRepository.save(user);
 
         return ResponseEntity.ok().body("User registered successfully!");
+    }
+
+    @PutMapping("/resetpassword")
+    public ResponseEntity<String> resetPassword(@Valid @RequestBody PasswordResetForm passwordresetform ){
+        User user = userService.findUserByEmail(passwordresetform.getEmail());
+        if (user == null) {
+            //RESPONED WITH USER NOT FOUND;
+            return new ResponseEntity<String>(
+                    "Fail -> USER WITH THIS EMAIL NOT FOUND!",
+                    HttpStatus.BAD_REQUEST);
+        }
+
+        String token = UUID.randomUUID().toString();
+        userService.createPasswordResetTokenForUser(user, token);
+        mailSender.send(constructResetTokenEmail(getAppUrl(request),
+                request.getLocale(), token, user));
     }
 }
